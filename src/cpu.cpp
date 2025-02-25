@@ -129,7 +129,7 @@ void CPU::op00EE() {
 
 // Jump to address
 void CPU::op1NNN(WORD addr) {
-	printf("1NNN: %x\n", addr);
+	//printf("1NNN: %x\n", addr);
 	m_programCounter = addr;
 }
 
@@ -276,12 +276,24 @@ void CPU::opCXNN(BYTE VX, BYTE data) {
 void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 	BYTE x = m_registers[VX]%64;
 	BYTE y = m_registers[VY]%32;
-	Screen screen = m_ram->getScreen();
-	BYTE sprite = m_ram->get(m_addressI);
+	m_registers[0xF] = 0;
 
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < 8; j++) {
+	for (unsigned int row = 0; row < height; row++) {
+
+		BYTE spriteByte = m_ram->get(m_addressI + row);
+
+		for (int col = 0; col < 8; col++) {
 			
+			BYTE spritePixel = spriteByte & (0x80 >> col);
+			BYTE screenPixel = m_ram->getScreen(x+col, y+row);
+
+			if (spritePixel) {
+				if (screenPixel == 0xFFFF) {
+					m_registers[0xF] = 1;
+				}
+			}
+
+			m_ram->setScreen(x+col, y+row, screenPixel ^= 0xFFFF);
 		}
 	}
 	printf("DXYN: %x %x %x\n", VX, VY, height);
