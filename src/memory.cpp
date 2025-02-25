@@ -5,7 +5,7 @@ Memory::Memory() {
 	m_stack.clear();
 	for (int i = 0; i < 64; i++) {
 		for (int j = 0; j < 32; j++) {
-			m_screenData[i][j] = 0;
+			m_screenData.pixels[i][j] = 0;
 		}
 	}
 }
@@ -15,7 +15,7 @@ void Memory::reset(FILE* in) {
 	m_stack.clear();
 	for (int i = 0; i < 64; i++) {
 		for (int j = 0; j < 32; j++) {
-			m_screenData[i][j] = 0;
+			m_screenData.pixels[i][j] = 0;
 		}
 	}
 	fread(&m_gameMemory[0x200], 0xfff, 1, in);
@@ -27,7 +27,15 @@ void Memory::set(WORD addr, BYTE data) {
 }
 
 void Memory::setScreen(BYTE X, BYTE Y, BYTE height) {
-	m_screenData[X][Y] = height;
+	m_screenData.pixels[X][Y] = height;
+}
+
+void Memory::clearScreen() {
+	for (int i = 0; i < 64; i++) {
+		for (int j = 0; j < 32; j++) {
+			m_screenData.pixels[i][j] = 0;
+		}
+	}
 }
 
 void Memory::push(BYTE data) {
@@ -44,6 +52,10 @@ BYTE Memory::pop() {
 	return data;
 }
 
+Screen Memory::getScreen() {
+	return m_screenData;
+}
+
 BYTE Memory::getScreen(BYTE X, BYTE Y) {
-	return m_screenData[X][Y];
+	return m_screenData.pixels[X][Y];
 }

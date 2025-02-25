@@ -118,11 +118,7 @@ void CPU::compute(WORD opcode) {
 // Clear the screen
 void CPU::op00E0() {
 	printf("00E0\n");
-	for (int i = 0; i < 64; i++) {
-		for (int j = 0; j < 32; j++) {
-			m_ram->setScreen(i, j, 0);
-		}
-	}
+	m_ram->clearScreen();
 }
 
 // Return from subrtn
@@ -133,7 +129,7 @@ void CPU::op00EE() {
 
 // Jump to address
 void CPU::op1NNN(WORD addr) {
-	//printf("1NNN: %x\n", addr);
+	printf("1NNN: %x\n", addr);
 	m_programCounter = addr;
 }
 
@@ -278,13 +274,21 @@ void CPU::opCXNN(BYTE VX, BYTE data) {
 
 // Draw sprite at (VX, VY) (set VF if pixels are unset, unset otherwise)
 void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
-	/*for (int yline = 0; yline < height; yline++) {
+	BYTE x = m_registers[VX]%64;
+	BYTE y = m_registers[VY]%32;
+	Screen screen = m_ram->getScreen();
+	BYTE sprite = m_ram->get(m_addressI);
 
-	}*/
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < 8; j++) {
+			
+		}
+	}
 	printf("DXYN: %x %x %x\n", VX, VY, height);
 	for (int i = 0x200; i < 0xFFF; i++) {
 		printf("%x", m_ram->get(i));
 	}
+	printf("\n");
 }
 
 // Skip if key in VX is pressed

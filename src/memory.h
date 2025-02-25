@@ -1,5 +1,6 @@
 #pragma once
 #include "bytes.h"
+#include "screen.h"
 #include <vector>
 
 class Memory {
@@ -10,13 +11,15 @@ public:
 	void set(WORD, BYTE);
 	void push(BYTE);
 	void setScreen(BYTE, BYTE, BYTE);
+	void clearScreen();
 	BYTE get(WORD);
 	BYTE pop();
+	Screen getScreen();
 	BYTE getScreen(BYTE, BYTE);
 
 
 private:
 	BYTE m_gameMemory[0xFFF];
 	std::vector<WORD> m_stack;
-	BYTE m_screenData[64][32];
+	Screen m_screenData;
 };
