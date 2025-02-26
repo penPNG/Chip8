@@ -9,7 +9,7 @@ Chip8::Chip8() {
 // vs directory shenanigans below
 void Chip8::reset() {
 	m_cpu.reset();
-	m_ram.reset(fopen("../../../Tetris.ch8", "rb"));
+	m_ram.reset(fopen("../../../testfile", "rb"));
 
 	return;
 }
@@ -29,14 +29,14 @@ BYTE* Chip8::getNextOpcode() {
 	//printf("%x\n", res);
 	m_cpu.compute(res);
 	m_cpu.decTimer();
-	m_cpu.decSound();
 	return m_ram.getScreen();
 }
 
-void Chip8::sendKeyboard(SDL_Event* event) {
+bool Chip8::sendKeyboard(SDL_Event* event) {
 	switch (event->type) {
 		case SDL_EVENT_KEY_DOWN: {
 			switch (event->key.key) {
+				case SDLK_ESCAPE: return true;
 				case SDLK_1: printf("1\n"); m_cpu.m_keys[0x1] = 1; break;
 				case SDLK_2: m_cpu.m_keys[0x2] = 1; break;
 				case SDLK_3: m_cpu.m_keys[0x3] = 1; break;
@@ -51,8 +51,9 @@ void Chip8::sendKeyboard(SDL_Event* event) {
 				case SDLK_F: m_cpu.m_keys[0xE] = 1; break;
 				case SDLK_Z: m_cpu.m_keys[0xA] = 1; break;
 				case SDLK_X: m_cpu.m_keys[0x0] = 1; break;
-				case SDLK_C: m_cpu.m_keys[0xC] = 1; break;
+				case SDLK_C: m_cpu.m_keys[0xB] = 1; break;
 				case SDLK_V: m_cpu.m_keys[0xF] = 1; break;
+				case SDLK_BACKSPACE: reset();
 			}
 		} break;
 		case SDL_EVENT_KEY_UP: {
@@ -71,9 +72,10 @@ void Chip8::sendKeyboard(SDL_Event* event) {
 				case SDLK_F: m_cpu.m_keys[0xE] = 0; break;
 				case SDLK_Z: m_cpu.m_keys[0xA] = 0; break;
 				case SDLK_X: m_cpu.m_keys[0x0] = 0; break;
-				case SDLK_C: m_cpu.m_keys[0xC] = 0; break;
+				case SDLK_C: m_cpu.m_keys[0xB] = 0; break;
 				case SDLK_V: m_cpu.m_keys[0xF] = 0; break;
 			}
 		} break;
 	}
+	return false;
 }

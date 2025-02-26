@@ -14,7 +14,7 @@ public:
 	void reset();
 	bool playSound();
 	BYTE* getNextOpcode();
-	void sendKeyboard(SDL_Event*);
+	bool sendKeyboard(SDL_Event*);
 	Memory m_ram;
 
 private:
