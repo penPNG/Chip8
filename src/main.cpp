@@ -21,7 +21,6 @@ static int cycleDelay;
 
 static Chip8 chip8;
 
-
 // Run once at startup
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
 	if (argc != 4) {
@@ -82,7 +81,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 	SDL_SetRenderDrawColor(renderer, 30, 30, 30, SDL_ALPHA_OPAQUE);
 	for (int i = 0; i < 64 * 32; i++) {
 		if (chip8.m_ram.m_screenData[i]) {
-			pixels[i].h = videoScale/2;	// CHEATER
+			pixels[i].h = videoScale;	// CHEATER
 		} else {
 			pixels[i].h = 0;
 		}

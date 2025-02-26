@@ -172,9 +172,8 @@ void CPU::op6XNN(BYTE VX, BYTE data) {
 
 // Set VX += NN
 void CPU::op7XNN(BYTE VX, BYTE data) {
-
-	printf("7XY0: %x %x\n", VX, data);
 	m_registers[VX] += data;
+	printf("7XY0: %x %x\n", VX, m_registers[VX]);
 }
 
 // Set VX = VY
@@ -275,30 +274,60 @@ void CPU::opCXNN(BYTE VX, BYTE data) {
 
 // Stolen from Austin Morlan: https://austinmorlan.com/posts/chip8_emulator/#the-instructions
 // Draw sprite at (VX, VY) (set VF if pixels are unset, unset otherwise)
+//void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
+//	BYTE x = m_registers[VX]%64;
+//	BYTE y = m_registers[VY]%32;
+//	BYTE spriteByte, spritePixel;
+//	BYTE* screenPixel;
+//	m_registers[0xF] = 0;
+//
+//	for (unsigned int row = 0; row < height; ++row) {
+//
+//		spriteByte = m_ram->m_gameMemory[m_addressI + row];
+//
+//		for (int col = 0; col < 8; ++col) {
+//			
+//			spritePixel = spriteByte & (0x80 >> col);
+//			screenPixel = &m_ram->m_screenData[(y+row)*64 + (x + col)];
+//
+//			if (spritePixel) {
+//				if (*screenPixel == 0xFFFFFFFF) {
+//					m_registers[0xF] = 1;
+//				}
+//				//*screenPixel ^= 0xFFFFFFFF;
+//				m_ram->setScreen(x+col, y+row, *screenPixel ^ 0xFFFF);
+//			}
+//
+//			
+//		}
+//	} // debugging below!
+//	printf("DXYN: %x %x %x\n", VX, VY, height);
+//	for (int i = 0; i < 32; i++) {
+//		for (int j = 0; j < 64; j++) {
+//			printf("%x", m_ram->m_screenData[i*j]);
+//		}
+//		printf("\n");
+//	}
+//	printf("\n");
+//}
+
+// My try at an implementation
 void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 	BYTE x = m_registers[VX]%64;
 	BYTE y = m_registers[VY]%32;
-	BYTE spriteByte, spritePixel;
-	BYTE* screenPixel;
 	m_registers[0xF] = 0;
+	for (BYTE row = 0; row < height; row++) {
+		BYTE spriteByte = m_ram->get(m_addressI + row);
 
-	for (unsigned int row = 0; row < height; ++row) {
-
-		spriteByte = m_ram->m_gameMemory[m_addressI + row];
-
-		for (int col = 0; col < 8; ++col) {
-			
-			spritePixel = spriteByte & (0x80 >> col);
-			screenPixel = &m_ram->m_screenData[(y+row)*64 + (x + col)];
-
+		for (BYTE col = 0; col < 8; col++) {
+			BYTE spritePixel = spriteByte & (0x80 >> col);
+			BYTE screenPixel = m_ram->m_screenData[(y+row)*64 + (x+col)];
 			if (spritePixel) {
-				if (*screenPixel == 0xFFFFFFFF) {
+				if (screenPixel & (0x80 >> col)) {
 					m_registers[0xF] = 1;
 				}
+				m_ram->setScreen(x+col, y+row, screenPixel ^ 0xFFFF);
 			}
-
-			//m_ram->setScreen(x+col, y+row, *screenPixel ^= 0xFFFF);
-			*screenPixel ^= 0xFFFFFFFF;
 		}
 	}
 	printf("DXYN: %x %x %x\n", VX, VY, height);
@@ -310,36 +339,6 @@ void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 	}
 	printf("\n");
 }
-
-
-// My try at an implementation
-//void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
-//	BYTE x = m_registers[VX]%64;
-//	BYTE y = m_registers[VY]%32;
-//	m_registers[0xF] = 0;
-//	for (BYTE row = 0; row < height; row++) {
-//		BYTE spriteByte = m_ram->get(m_addressI + row);
-//
-//		for (BYTE col = 0; col < 8; col++) {
-//			BYTE spritePixel = spriteByte & (0x80 >> col);
-//			BYTE screenPixel = m_ram->m_screenData[y+row * x+col];
-//			if (spritePixel) {
-//				if (screenPixel & (0x80 >> col)) {
-//					m_registers[0xF] = 1;
-//				}
-//				m_ram->setScreen(x+col, y+row, screenPixel ^= spritePixel);
-//			}
-//		}
-//	}
-//	printf("DXYN: %x %x %x\n", VX, VY, height);
-//	for (int i = 0; i < 32; i++) {
-//		for (int j = 0; j < 64; j++) {
-//			printf("%x", m_ram->m_screenData[i*j]);
-//		}
-//		printf("\n");
-//	}
-//	printf("\n");
-//}
 
 // Skip if key in VX is pressed
 void CPU::opEX9E(BYTE VX) {
@@ -359,31 +358,31 @@ void CPU::opFX07(BYTE VX) {
 
 // Wait for keypress and store in VX (halt instruction until key event, continue delay and sound timers)
 void CPU::opFX0A(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX0A: %x\n", VX);
 	m_registers[VX] = getKey();
 }
 
 // Set delay timer to VX
 void CPU::opFX15(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX15: %x\n", VX);
 	m_delayTimer = m_registers[VX];
 }
 
 // Set sound timer to VX
 void CPU::opFX18(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX18: %x\n", VX);
 	m_soundTimer = m_registers[VX];
 }
 
 // I += VX
 void CPU::opFX1E(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX1E: %x\n", VX);
 	m_addressI += VX;
 }
 
 // I = VX
 void CPU::opFX29(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX29: %x\n", VX);
 	m_addressI = VX;
 }
 
@@ -397,7 +396,7 @@ void CPU::opFX33(BYTE VX) {
 
 // Store from V0 to VX starting at address I (offset I for each value)
 void CPU::opFX55(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX55: %x\n", VX);
 	for (int i = 0; i < VX + 1; i++) {
 		m_ram->set(m_addressI+i, m_registers[i]);
 	}
@@ -405,7 +404,7 @@ void CPU::opFX55(BYTE VX) {
 
 // Fills from V0 to VX starting at address I (offset I for each value)
 void CPU::opFX65(BYTE VX) {
-	printf("FX07: %x\n", VX);
+	printf("FX65: %x\n", VX);
 	for (int i = 0; i < VX + 1; i++) {
 		m_registers[i] = m_ram->get(m_addressI + i);
 	}

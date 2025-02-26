@@ -47,7 +47,7 @@ void Memory::set(WORD addr, BYTE data) {
 }
 
 void Memory::setScreen(BYTE X, BYTE Y, BYTE height) {
-	m_screenData[X*Y] = height;
+	m_screenData[X+Y*64] = height;
 }
 
 void Memory::clearScreen() {

@@ -9,7 +9,7 @@ Chip8::Chip8() {
 // vs directory shenanigans below
 void Chip8::reset() {
 	m_cpu.reset();
-	m_ram.reset(fopen("../../../IBMLogo.ch8", "rb"));
+	m_ram.reset(fopen("../../../Trip8.ch8", "rb"));
 
 	return;
 }
