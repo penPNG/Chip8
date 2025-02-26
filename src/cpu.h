@@ -13,7 +13,7 @@ public:
 	BYTE getReg(BYTE);
 	WORD getPC();
 	void decTimer();
-	void decSound();
+	bool decSound();
 	void setReg(BYTE, BYTE);
 	void setPC(WORD);
 	void incPC();

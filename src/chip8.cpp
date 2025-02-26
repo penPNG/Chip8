@@ -14,6 +14,13 @@ void Chip8::reset() {
 	return;
 }
 
+bool Chip8::playSound() {
+	if (m_cpu.decSound()) {
+		return true;
+	}
+	return false;
+}
+
 BYTE* Chip8::getNextOpcode() {
 	WORD res = 0;
 	res = m_ram.get(m_cpu.getPC());

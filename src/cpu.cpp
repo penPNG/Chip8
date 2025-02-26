@@ -30,8 +30,12 @@ void CPU::decTimer() {
 	if (m_delayTimer > 0) m_delayTimer--;
 }
 
-void CPU::decSound() {
-	if (m_soundTimer > 0) m_soundTimer--;
+bool CPU::decSound() {
+	if (m_soundTimer > 0) {
+		m_soundTimer--;
+		return true;
+	}
+	return false;
 }
 
 BYTE CPU::getReg(BYTE VX) {

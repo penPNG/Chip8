@@ -12,6 +12,7 @@ class Chip8 {
 public:
 	Chip8();
 	void reset();
+	bool playSound();
 	BYTE* getNextOpcode();
 	void sendKeyboard(SDL_Event*);
 	Memory m_ram;
