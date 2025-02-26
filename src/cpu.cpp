@@ -90,7 +90,7 @@ void CPU::compute(WORD opcode) {
 		case 0x90: op9XY0(VX, VY);
 		case 0xA0: opANNN(addr); break;
 		case 0xC0: opCXNN(VX, data); break;
-		case 0xD0: opDXYN(VX, VY, data); break;
+		case 0xD0: opDXYN(VX, VY, data&0x000Fu); break;
 		case 0xE0: {
 			switch (data) {
 				case 0x9E: opEX9E(VX); break;
@@ -276,32 +276,66 @@ void CPU::opCXNN(BYTE VX, BYTE data) {
 void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 	BYTE x = m_registers[VX]%64;
 	BYTE y = m_registers[VY]%32;
+	BYTE spriteByte, spritePixel;
+	BYTE* screenPixel;
 	m_registers[0xF] = 0;
 
-	for (unsigned int row = 0; row < height; row++) {
+	for (unsigned int row = 0; row < height; ++row) {
 
-		BYTE spriteByte = m_ram->get(m_addressI + row);
+		spriteByte = m_ram->m_gameMemory[m_addressI + row];
 
-		for (int col = 0; col < 8; col++) {
+		for (int col = 0; col < 8; ++col) {
 			
-			BYTE spritePixel = spriteByte & (0x80 >> col);
-			BYTE screenPixel = m_ram->getScreen(x+col, y+row);
+			spritePixel = spriteByte & (0x80 >> col);
+			screenPixel = &m_ram->m_screenData[(y+row)*64 + (x + col)];
 
 			if (spritePixel) {
-				if (screenPixel == 0xFFFF) {
+				if (*screenPixel == 0xFFFFFFFF) {
 					m_registers[0xF] = 1;
 				}
 			}
 
-			m_ram->setScreen(x+col, y+row, screenPixel ^= 0xFFFF);
+			//m_ram->setScreen(x+col, y+row, *screenPixel ^= 0xFFFF);
+			*screenPixel ^= 0xFFFFFFFF;
 		}
 	}
 	printf("DXYN: %x %x %x\n", VX, VY, height);
-	for (int i = 0x200; i < 0xFFF; i++) {
-		printf("%x", m_ram->get(i));
+	for (int i = 0; i < 32; i++) {
+		for (int j = 0; j < 64; j++) {
+			printf("%x", m_ram->m_screenData[i*j]);
+		}
+		printf("\n");
 	}
 	printf("\n");
 }
+
+//void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
+//	BYTE x = m_registers[VX]%64;
+//	BYTE y = m_registers[VY]%32;
+//	m_registers[0xF] = 0;
+//	for (BYTE row = 0; row < height; row++) {
+//		BYTE spriteByte = m_ram->get(m_addressI + row);
+//
+//		for (BYTE col = 0; col < 8; col++) {
+//			BYTE spritePixel = spriteByte & (0x80 >> col);
+//			BYTE screenPixel = m_ram->m_screenData[y+row * x+col];
+//			if (spritePixel) {
+//				if (screenPixel & (0x80 >> col)) {
+//					m_registers[0xF] = 1;
+//				}
+//				m_ram->setScreen(x+col, y+row, screenPixel ^= spritePixel);
+//			}
+//		}
+//	}
+//	printf("DXYN: %x %x %x\n", VX, VY, height);
+//	for (int i = 0; i < 32; i++) {
+//		for (int j = 0; j < 64; j++) {
+//			printf("%x", m_ram->m_screenData[i*j]);
+//		}
+//		printf("\n");
+//	}
+//	printf("\n");
+//}
 
 // Skip if key in VX is pressed
 void CPU::opEX9E(BYTE VX) {

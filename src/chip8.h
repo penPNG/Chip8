@@ -12,11 +12,11 @@ class Chip8 {
 public:
 	Chip8();
 	void reset();
-	Screen getNextOpcode();
+	BYTE* getNextOpcode();
 	void sendKeyboard();
+	Memory m_ram;
 
 private:
-	Memory m_ram;
 	CPU m_cpu;
 
 };

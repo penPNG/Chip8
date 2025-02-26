@@ -14,12 +14,12 @@ public:
 	void clearScreen();
 	BYTE get(WORD);
 	BYTE pop();
-	Screen getScreen();
+	BYTE* getScreen();
 	BYTE getScreen(BYTE, BYTE);
+	BYTE m_screenData[64 * 32]{};
+	BYTE m_gameMemory[0xFFF];
 
 
 private:
-	BYTE m_gameMemory[0xFFF];
 	std::vector<WORD> m_stack;
-	Screen m_screenData;
 };

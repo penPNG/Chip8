@@ -1,7 +1,16 @@
 #pragma once
+#include <SDL3/SDL.h>
 #include "bytes.h"
 
-// I so didn't want to do this, but I don't know how to return a double array the way I want/need it
-struct Screen {
-	BYTE pixels[64][32];
+class Screen {
+public:
+	Screen(char const* title, int windowWidth, int windowHeight, int textureWidth, int textureHeight);
+
+	~Screen();
+	void Update(void const* buffer, int pitch);
+
+private:
+	SDL_Window* window{};
+	SDL_Renderer* renderer{};
+	SDL_Texture* texture{};
 };
