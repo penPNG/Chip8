@@ -26,6 +26,14 @@ void CPU::reset() {
 	m_soundTimer = 0;
 }
 
+void CPU::decTimer() {
+	if (m_delayTimer > 0) m_delayTimer--;
+}
+
+void CPU::decSound() {
+	if (m_soundTimer > 0) m_soundTimer--;
+}
+
 BYTE CPU::getReg(BYTE VX) {
 	return m_registers[VX];
 }
@@ -47,6 +55,7 @@ void CPU::incPC() {
 }
 
 void CPU::compute(WORD opcode) {
+	incPC();
 	BYTE numer = (opcode & 0xF000) >> 8;
 	BYTE denom = opcode & 0x000F;
 	BYTE data = opcode & 0x00FF;
@@ -129,7 +138,7 @@ void CPU::op00EE() {
 
 // Jump to address
 void CPU::op1NNN(WORD addr) {
-	//printf("1NNN: %x\n", addr);
+	printf("1NNN: %x\n", addr);
 	m_programCounter = addr;
 }
 
@@ -342,11 +351,13 @@ void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 
 // Skip if key in VX is pressed
 void CPU::opEX9E(BYTE VX) {
+	if (m_keys[m_registers[VX]]) m_programCounter += 2;
 	printf("EX9E: %x\n", VX);
 }
 
 // Skip if key in VX is not pressed
 void CPU::opEXA1(BYTE VX) {
+	if (!m_keys[m_registers[VX]]) m_programCounter += 2;
 	printf("EXA1: %x\n", VX);
 }
 
@@ -359,7 +370,13 @@ void CPU::opFX07(BYTE VX) {
 // Wait for keypress and store in VX (halt instruction until key event, continue delay and sound timers)
 void CPU::opFX0A(BYTE VX) {
 	printf("FX0A: %x\n", VX);
-	m_registers[VX] = getKey();
+	for (BYTE i = 0; i < 16; i++) {
+		if (m_keys[i]) {
+			m_registers[VX] = i;
+			return;
+		}
+	}
+	m_programCounter -= 2;
 }
 
 // Set delay timer to VX
@@ -377,13 +394,13 @@ void CPU::opFX18(BYTE VX) {
 // I += VX
 void CPU::opFX1E(BYTE VX) {
 	printf("FX1E: %x\n", VX);
-	m_addressI += VX;
+	m_addressI += m_registers[VX];
 }
 
 // I = VX
 void CPU::opFX29(BYTE VX) {
 	printf("FX29: %x\n", VX);
-	m_addressI = VX;
+	m_addressI = m_registers[VX];
 }
 
 // Store BCD representation of VX: 100s in I, 10s in I+1, 1s in 1+2

@@ -69,7 +69,7 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
 	if (event->type == SDL_EVENT_QUIT) {
 		return SDL_APP_SUCCESS;
 	}
-	chip8.sendKeyboard(); // TODO: send keyboard info to the cpu!
+	chip8.sendKeyboard(event);
 	return SDL_APP_CONTINUE;
 }
 

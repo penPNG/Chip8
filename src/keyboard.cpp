@@ -11,7 +11,12 @@
 // | A | 0 | B | F |    | Z | X | C | V |
 // + - + - + - + - +    + - + - + - + - +
 
-unsigned char getKey() {
+unsigned char getKey(BYTE* keys) {
     // TODO: use SDL key events to return key as a 4-bit value
+    for (BYTE i = 0; i < sizeof(*keys); i++) {
+        if (keys[i]) {
+            return i;
+        }
+    }
     return 0;
 }

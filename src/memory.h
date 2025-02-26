@@ -9,11 +9,11 @@ public:
 
 	void reset(FILE*);
 	void set(WORD, BYTE);
-	void push(BYTE);
+	void push(WORD);
 	void setScreen(BYTE, BYTE, BYTE);
 	void clearScreen();
 	BYTE get(WORD);
-	BYTE pop();
+	WORD pop();
 	BYTE* getScreen();
 	BYTE getScreen(BYTE, BYTE);
 	BYTE m_screenData[64 * 32]{};

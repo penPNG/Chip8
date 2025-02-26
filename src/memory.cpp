@@ -56,7 +56,7 @@ void Memory::clearScreen() {
 	}
 }
 
-void Memory::push(BYTE data) {
+void Memory::push(WORD data) {
 	m_stack.push_back(data);
 }
 
@@ -64,8 +64,8 @@ BYTE Memory::get(WORD addr) {
 	return m_gameMemory[addr];
 }
 
-BYTE Memory::pop() {
-	BYTE data = m_stack.back(); 
+WORD Memory::pop() {
+	WORD data = m_stack.back(); 
 	m_stack.pop_back();
 	return data;
 }

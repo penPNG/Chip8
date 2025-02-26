@@ -13,10 +13,9 @@ public:
 	Chip8();
 	void reset();
 	BYTE* getNextOpcode();
-	void sendKeyboard();
+	void sendKeyboard(SDL_Event*);
 	Memory m_ram;
 
 private:
 	CPU m_cpu;
-
 };

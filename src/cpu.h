@@ -12,10 +12,15 @@ public:
 	void reset();
 	BYTE getReg(BYTE);
 	WORD getPC();
+	void decTimer();
+	void decSound();
 	void setReg(BYTE, BYTE);
 	void setPC(WORD);
 	void incPC();
 	void compute(WORD);
+
+public:
+	BYTE m_keys[16]{ 0 };
 
 private:
 	Memory *m_ram;
