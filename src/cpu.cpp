@@ -272,6 +272,8 @@ void CPU::opCXNN(BYTE VX, BYTE data) {
 	printf("CXNN %x\n", m_registers[VX]);
 }
 
+
+// Stolen from Austin Morlan: https://austinmorlan.com/posts/chip8_emulator/#the-instructions
 // Draw sprite at (VX, VY) (set VF if pixels are unset, unset otherwise)
 void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 	BYTE x = m_registers[VX]%64;
@@ -309,6 +311,8 @@ void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 	printf("\n");
 }
 
+
+// My try at an implementation
 //void CPU::opDXYN(BYTE VX, BYTE VY, BYTE height) {
 //	BYTE x = m_registers[VX]%64;
 //	BYTE y = m_registers[VY]%32;

@@ -5,6 +5,8 @@ Chip8::Chip8() {
 	m_cpu = CPU(&m_ram);
 }
 
+// please put whatever rom file you use here!
+// vs directory shenanigans below
 void Chip8::reset() {
 	m_cpu.reset();
 	m_ram.reset(fopen("../../../IBMLogo.ch8", "rb"));
